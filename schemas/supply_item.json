@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SupplyItem",
+  "type": "object",
+  "properties": {
+    "sku": {"type": "string"},
+    "name": {"type": "string"},
+    "type": {"type": "string"},
+    "price": {"type": "number"},
+    "stock": {"type": "integer"},
+    "slots": {"type": ["integer", "null"]}
+  },
+  "required": ["sku", "name", "type", "price"]
+}

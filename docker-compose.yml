@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  need-worker:
+    build: .
+    container_name: need-worker
+    command: python need_worker.py
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "9001:9001"
+    depends_on:
+      - redis
+
+  opportunity-agent:
+    build: .
+    container_name: opportunity-agent
+    command: python opportunity_agent.py
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "9003:9003"
+    depends_on:
+      - redis
+
+  supplier-agent:
+    build: .
+    container_name: supplier-agent
+    command: python supplier_agent.py
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "9005:9005"
+    depends_on:
+      - redis
+
+  merchant-agent:
+    build: .
+    container_name: merchant-agent
+    command: python merchant_agent.py
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "9004:9004"
+    depends_on:
+      - redis
+      - supplier-agent
+      - opportunity-agent
+
+  match-agent:
+    build: .
+    container_name: match-agent
+    command: python match_agent.py
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "9002:9002"
+    depends_on:
+      - redis
+      - need-worker
+      - opportunity-agent
+
+  insight-agent:
+    build: .
+    container_name: insight-agent
+    command: python insight_agent.py
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "9006:9006"
+    depends_on:
+      - match-agent
+
+  dashboard:
+    build: .
+    container_name: dashboard
+    command: >
+      streamlit run dashboard/streamlit_app.py
+      --server.port 8501
+      --server.address 0.0.0.0
+      --server.fileWatcherType none
+    volumes:
+      - .:/app
+    ports:
+      - "8501:8501"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+
+volumes:
+  redis-data:

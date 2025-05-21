@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Match",
+  "type": "object",
+  "properties": {
+    "id": {"type": "string"},
+    "need_id": {"type": "string"},
+    "offer_sku": {"type": "string"},
+    "score": {"type": "number"},
+    "timestamp": {"type": "string", "format": "date-time"}
+  },
+  "required": ["id", "need_id", "offer_sku", "score", "timestamp"]
+}

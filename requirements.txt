@@ -1,0 +1,9 @@
+# Core dependencies for the AI Agent Ecosystem
+jsonrpcserver>=5.0.0
+requests>=2.31.0
+
+# (Optional) If you add Redis persistence later:
+redis>=4.5.0
+
+# (Optional) For the Streamlit dashboard:
+streamlit>=1.25.0
