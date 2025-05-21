@@ -3,14 +3,15 @@ services:
     image: redis:7
     container_name: redis-ai
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
-      - redis-ai-data:/data
+      - redis-data:/data
 
   needs-worker:
     build: .
     container_name: needs-worker
-    command: python needs_worker.py
+    entrypoint: ["python"]
+    command: ["agents/need_worker.py"]
     volumes:
       - .:/app
     working_dir: /app
@@ -25,7 +26,8 @@ services:
   opportunity-agent:
     build: .
     container_name: opportunity-agent
-    command: python opportunity_agent.py
+    entrypoint: ["python"]
+    command: ["agents/opportunity_agent.py"]
     volumes:
       - .:/app
     working_dir: /app
@@ -40,7 +42,8 @@ services:
   supplier-agent:
     build: .
     container_name: supplier-agent
-    command: python supplier_agent.py
+    entrypoint: ["python"]
+    command: ["agents/supplier_agent.py"]
     volumes:
       - .:/app
     working_dir: /app
@@ -55,7 +58,8 @@ services:
   merchant-agent:
     build: .
     container_name: merchant-agent
-    command: python merchant_agent.py
+    entrypoint: ["python"]
+    command: ["agents/merchant_agent.py"]
     volumes:
       - .:/app
     working_dir: /app
@@ -72,7 +76,8 @@ services:
   match-agent:
     build: .
     container_name: match-agent
-    command: python match_agent.py
+    entrypoint: ["python"]
+    command: ["agents/match_agent.py"]
     volumes:
       - .:/app
     working_dir: /app
@@ -89,7 +94,8 @@ services:
   insight-agent:
     build: .
     container_name: insight-agent
-    command: python insight_agent.py
+    entrypoint: ["python"]
+    command: ["agents/insight_agent.py"]
     volumes:
       - .:/app
     working_dir: /app
@@ -104,15 +110,20 @@ services:
   dashboard:
     build: .
     container_name: dashboard
-    command: >
-      streamlit run dashboard/streamlit_app.py
-      --server.port 8501
-      --server.address 0.0.0.0
-      --server.fileWatcherType none
+    entrypoint: ["streamlit"]
+    command:
+      - run
+      - dashboard/streamlit_app.py
+      - --server.port
+      - "8501"
+      - --server.address
+      - "0.0.0.0"
+      - --server.fileWatcherType
+      - "none"
     volumes:
       - .:/app
     ports:
-      - "8501:8501"
+      - "8502:8501"
     environment:
       - REDIS_HOST=redis-ai
       - REDIS_PORT=6379
@@ -120,4 +131,4 @@ services:
       - redis-ai
 
 volumes:
-  redis-ai-data:
+  redis-data:
