@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 from jsonrpcserver import method, serve
 
-NEED_RPC_URL = "http://need-worker:9001/rpc"
+NEED_RPC_URL = "http://needs-worker:9001/rpc"
 OFFER_RPC_URL = "http://opportunity-agent:9003/rpc"
 
 NEEDS_CACHE = []

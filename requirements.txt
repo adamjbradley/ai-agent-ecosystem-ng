@@ -1,5 +1,5 @@
 # Core dependencies for the AI Agent Ecosystem
-jsonrpcserver>=5.0.0
+jsonrpcserver>=6.10.0
 requests>=2.31.0
 
 # (Optional) If you add Redis persistence later:

@@ -3,7 +3,7 @@ import requests
 import uuid
 
 # RPC endpoints for agents
-NEED_RPC = "http://need-worker:9001/rpc"
+NEED_RPC = "http://needs-worker:9001/rpc"
 OFFER_RPC = "http://opportunity-agent:9003/rpc"
 SUPPLY_RPC = "http://supplier-agent:9005/rpc"
 MATCH_RPC = "http://match-agent:9002/rpc"

@@ -1,28 +1,26 @@
-version: '3.8'
-
 services:
-  redis:
+  redis-ai:
     image: redis:7
-    container_name: redis
+    container_name: redis-ai
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data
+      - redis-ai-data:/data
 
-  need-worker:
+  needs-worker:
     build: .
-    container_name: need-worker
-    command: python need_worker.py
+    container_name: needs-worker
+    command: python needs_worker.py
     volumes:
       - .:/app
     working_dir: /app
     environment:
-      - REDIS_HOST=redis
+      - REDIS_HOST=redis-ai
       - REDIS_PORT=6379
     ports:
       - "9001:9001"
     depends_on:
-      - redis
+      - redis-ai
 
   opportunity-agent:
     build: .
@@ -32,12 +30,12 @@ services:
       - .:/app
     working_dir: /app
     environment:
-      - REDIS_HOST=redis
+      - REDIS_HOST=redis-ai
       - REDIS_PORT=6379
     ports:
       - "9003:9003"
     depends_on:
-      - redis
+      - redis-ai
 
   supplier-agent:
     build: .
@@ -47,12 +45,12 @@ services:
       - .:/app
     working_dir: /app
     environment:
-      - REDIS_HOST=redis
+      - REDIS_HOST=redis-ai
       - REDIS_PORT=6379
     ports:
       - "9005:9005"
     depends_on:
-      - redis
+      - redis-ai
 
   merchant-agent:
     build: .
@@ -62,12 +60,12 @@ services:
       - .:/app
     working_dir: /app
     environment:
-      - REDIS_HOST=redis
+      - REDIS_HOST=redis-ai
       - REDIS_PORT=6379
     ports:
       - "9004:9004"
     depends_on:
-      - redis
+      - redis-ai
       - supplier-agent
       - opportunity-agent
 
@@ -79,13 +77,13 @@ services:
       - .:/app
     working_dir: /app
     environment:
-      - REDIS_HOST=redis
+      - REDIS_HOST=redis-ai
       - REDIS_PORT=6379
     ports:
       - "9002:9002"
     depends_on:
-      - redis
-      - need-worker
+      - redis-ai
+      - needs-worker
       - opportunity-agent
 
   insight-agent:
@@ -96,7 +94,7 @@ services:
       - .:/app
     working_dir: /app
     environment:
-      - REDIS_HOST=redis
+      - REDIS_HOST=redis-ai
       - REDIS_PORT=6379
     ports:
       - "9006:9006"
@@ -116,10 +114,10 @@ services:
     ports:
       - "8501:8501"
     environment:
-      - REDIS_HOST=redis
+      - REDIS_HOST=redis-ai
       - REDIS_PORT=6379
     depends_on:
-      - redis
+      - redis-ai
 
 volumes:
-  redis-data:
+  redis-ai-data:
