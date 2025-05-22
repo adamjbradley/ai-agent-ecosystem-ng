@@ -3,11 +3,92 @@
   "title": "Need",
   "type": "object",
   "properties": {
-    "id": {"type": "string"},
-    "entity_id": {"type": "string"},
-    "category": {"type": "string"},
-    "constraints": {"type": "object"},
-    "timestamp": {"type": "string", "format": "date-time"}
+    "id": { "type": "string", "description": "Unique identifier for the need." },
+    "entity_type": {
+      "type": "string",
+      "enum": ["individual", "business", "government"],
+      "description": "Type of entity making the request."
+    },
+    "classification": {
+      "type": "string",
+      "enum": ["Goods", "Services", "Land", "Labor", "Capital"],
+      "description": "Economic classification of the need."
+    },
+    "need_category": {
+      "type": "string",
+      "description": "Specific category of need (e.g., credit, buildings, power_and_water, contractor_services)."
+    },
+    "basic_human_needs": {
+      "type": "array",
+      "description": "Applies to individual needs: Maslow's hierarchy categories.",
+      "items": {
+        "type": "string",
+        "enum": ["physiological", "safety", "love_belonging", "esteem", "self_actualization"]
+      }
+    },
+    "what": {
+      "type": "string",
+      "description": "High-level description of the product or service (e.g., headphones, breakfast cereal)."
+    },
+    "elements": {
+      "type": "object",
+      "description": "Attributes and their available options.",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
+    "conditions": {
+      "type": "array",
+      "description": "Fixed combinations of elements with conditional pricing or terms.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "elements": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "price": { "type": "number", "description": "Price when this condition applies." }
+        },
+        "required": ["elements", "price"]
+      }
+    },
+    "musts": {
+      "type": "array",
+      "description": "Non-negotiable element requirements.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "element": { "type": "string" },
+          "options": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["element", "options"]
+      }
+    },
+    "wants": {
+      "type": "array",
+      "description": "Desirable elements ranked by importance (1-10).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "element": { "type": "string" },
+          "options": { "type": "array", "items": { "type": "string" } },
+          "rank": { "type": "integer", "minimum": 1, "maximum": 10 }
+        },
+        "required": ["element", "options", "rank"]
+      }
+    },
+    "urgency": {
+      "type": "string",
+      "enum": ["now", "soon", "future"],
+      "description": "Timing requirement for fulfilling the need."
+    }
   },
-  "required": ["id", "entity_id", "category", "timestamp"]
+  "required": [
+    "id", "entity_type", "classification", "need_category",
+    "what", "elements", "urgency"
+  ]
 }

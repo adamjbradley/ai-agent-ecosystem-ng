@@ -4,9 +4,10 @@ import uuid
 import logging
 from datetime import datetime
 from jsonrpcserver import method, serve
+from jsonrpcserver.response import Success
 
-NEED_RPC_URL   = "http://needs-worker:9001/rpc"
-OFFER_RPC_URL  = "http://opportunity-agent:9003/rpc"
+NEED_RPC_URL  = "http://needs-worker:9001/rpc"
+OFFER_RPC_URL = "http://opportunity-agent:9003/rpc"
 
 NEEDS_CACHE  = []
 OFFERS_CACHE = []
@@ -35,9 +36,9 @@ class MLScorer(BaseScorer):
         try:
             from joblib import load
             self.model = load(model_path)
-            logging.info(f"Loaded ML model from {model_path}")
-        except Exception as e:
-            logging.warning(f"Could not load ML model: {e}")
+            logging.info(f"[match_agent] Loaded ML model from {model_path}")
+        except Exception:
+            logging.warning("[match_agent] No ML model, falling back to BaseScorer")
             self.model = None
 
     def score(self, need, offer):
@@ -48,7 +49,7 @@ class MLScorer(BaseScorer):
             proba = self.model.predict_proba(features)[0][1]
             return float(proba)
         except Exception as e:
-            logging.error(f"ML scoring failed: {e}")
+            logging.error(f"[match_agent] ML scoring failed: {e}")
             return super().score(need, offer)
 
 scorer = MLScorer()
@@ -73,19 +74,21 @@ async def sync_and_match():
 
 @method
 def match_list(params=None):
-    return MATCHES
+    logging.info(f"[match_agent] Returning {len(MATCHES)} matches")
+    return Success(MATCHES)
 
 @method
 def match_propose(params):
     need  = params.get("need")
     offer = params.get("offer")
     score = scorer.score(need, offer)
-    return {
+    resp = {
         "need_id": need.get("id"),
         "offer_sku": offer.get("sku"),
         "score": score,
         "timestamp": datetime.utcnow().isoformat()+"Z"
     }
+    return Success(resp)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

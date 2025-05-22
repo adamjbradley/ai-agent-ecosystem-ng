@@ -4,6 +4,7 @@ import uuid
 import logging
 from datetime import datetime
 from jsonrpcserver import method, serve
+from jsonrpcserver.response import Success
 
 MATCH_RPC_URL = "http://match-agent:9002/rpc"
 PREDICTIONS   = []
@@ -29,9 +30,9 @@ class MLPredictor(BasePredictor):
         try:
             from joblib import load
             self.model = load(model_path)
-            logging.info(f"Loaded ML predictor from {model_path}")
-        except Exception as e:
-            logging.warning(f"Could not load ML predictor: {e}")
+            logging.info(f"[insight_worker] Loaded ML model from {model_path}")
+        except Exception:
+            logging.warning("[insight_worker] No ML predictor found")
             self.model = None
 
     def predict(self, matches):
@@ -45,7 +46,7 @@ class MLPredictor(BasePredictor):
                 for m, p in zip(matches, probs)
             ]
         except Exception as e:
-            logging.error(f"ML prediction failed: {e}")
+            logging.error(f"[insight_worker] ML prediction failed: {e}")
             return super().predict(matches)
 
 predictor = MLPredictor()
@@ -62,7 +63,8 @@ async def sync_and_predict():
 
 @method
 def prediction_list(params=None):
-    return PREDICTIONS
+    logging.info(f"[insight_worker] Returning {len(PREDICTIONS)} predictions")
+    return Success(PREDICTIONS)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
