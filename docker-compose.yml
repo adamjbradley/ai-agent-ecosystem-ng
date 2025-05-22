@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   redis-ai:
     image: redis:7
@@ -73,22 +71,25 @@ services:
     volumes:
       - .:/app
     working_dir: /app
+    environment:
+      - NEED_RPC_URL=http://needs-worker:9001
+      - OFFER_RPC_URL=http://opportunity-agent:9003
     ports:
       - "9002:9002"
     depends_on:
       - needs-worker
       - opportunity-agent
 
-  insight-agent:
+  insight-worker:
     build: .
-    container_name: insight-agent
+    container_name: insight-worker
     entrypoint: ["python"]
     command: ["workers/insight_worker.py"]
     volumes:
       - .:/app
     working_dir: /app
     ports:
-      - "9007:9006"
+      - "9008:9006"
     depends_on:
       - match-agent
 
@@ -118,7 +119,7 @@ services:
       - opportunity-agent
       - supplier-agent
       - match-agent
-      - insight-agent
+      - insight-worker
 
   entity-need-creator:
     build: .

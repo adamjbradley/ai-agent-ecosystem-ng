@@ -1,0 +1,153 @@
+{
+  "info": {
+    "name": "Agent Ecosystem MCP - Updated",
+    "_postman_id": "GENERATED_UUID",
+    "description": "JSON-RPC 2.0 endpoints for AI Agent Ecosystem (updated)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Needs",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"need_list\",\n  \"params\": {},\n  \"id\": \"UUID\"\n}"
+        },
+        "url": { "raw": "http://127.0.0.1:9001", "protocol": "http", "host": ["127.0.0.1"], "port": "9001" }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Need",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"need_intent\",\n  \"params\": { \"id\": \"sample-id\", \"what\": \"headphones\" },\n  \"id\": \"UUID\"\n}"
+        },
+        "url": { "raw": "http://127.0.0.1:9001", "protocol": "http", "host": ["127.0.0.1"], "port": "9001" }
+      },
+      "response": []
+    },
+    {
+      "name": "List Offers",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"offer_list\",\n  \"params\": {},\n  \"id\": \"UUID\"\n}"
+        },
+        "url": { "raw": "http://127.0.0.1:9003", "protocol": "http", "host": ["127.0.0.1"], "port": "9003" }
+      },
+      "response": []
+    },
+    {
+      "name": "Publish Offer",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"offer_publish\",\n  \"params\": { \"offer\": { \"sku\": \"test\", \"name\": \"Test Product\", \"type\": \"product\", \"price\": 10.0 } },\n  \"id\": \"UUID\"\n}"
+        },
+        "url": { "raw": "http://127.0.0.1:9003", "protocol": "http", "host": ["127.0.0.1"], "port": "9003" }
+      },
+      "response": []
+    },
+    {
+      "name": "List Supply",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"supply_list\",\n  \"params\": {},\n  \"id\": \"UUID\"\n}"
+        },
+        "url": { "raw": "http://127.0.0.1:9005", "protocol": "http", "host": ["127.0.0.1"], "port": "9005" }
+      },
+      "response": []
+    },
+    {
+      "name": "Deliver Supply",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"supply_deliver\",\n  \"params\": { \"sku\": \"steel-pipe\", \"quantity\": 5, \"merchant_id\": \"m1\" },\n  \"id\": \"UUID\"\n}"
+        },
+        "url": { "raw": "http://127.0.0.1:9005", "protocol": "http", "host": ["127.0.0.1"], "port": "9005" }
+      },
+      "response": []
+    },
+    {
+      "name": "List Merchant Offers",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"offer_list\",\n  \"params\": {},\n  \"id\": \"UUID\"\n}"
+        },
+        "url": { "raw": "http://127.0.0.1:9004", "protocol": "http", "host": ["127.0.0.1"], "port": "9004" }
+      },
+      "response": []
+    },
+    {
+      "name": "Publish Merchant Offer",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"offer_publish\",\n  \"params\": { \"offer\": { \"sku\": \"merchant-1\", \"name\": \"Merchant Product\", \"type\": \"product\", \"price\": 15.0 } },\n  \"id\": \"UUID\"\n}"
+        },
+        "url": { "raw": "http://127.0.0.1:9004", "protocol": "http", "host": ["127.0.0.1"], "port": "9004" }
+      },
+      "response": []
+    },
+    {
+      "name": "List Matches",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"match_list\",\n  \"params\": {},\n  \"id\": \"UUID\"\n}"
+        },
+        "url": { "raw": "http://127.0.0.1:9002", "protocol": "http", "host": ["127.0.0.1"], "port": "9002" }
+      },
+      "response": []
+    },
+    {
+      "name": "Propose Match",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"match_propose\",\n  \"params\": { \"need\": { \"id\": \"n1\" }, \"offer\": { \"sku\": \"o1\" } },\n  \"id\": \"UUID\"\n}"
+        },
+        "url": { "raw": "http://127.0.0.1:9002", "protocol": "http", "host": ["127.0.0.1"], "port": "9002" }
+      },
+      "response": []
+    },
+    {
+      "name": "List Predictions",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"prediction_list\",\n  \"params\": {},\n  \"id\": \"UUID\"\n}"
+        },
+        "url": { "raw": "http://127.0.0.1:9007", "protocol": "http", "host": ["127.0.0.1"], "port": "9007" }
+      },
+      "response": []
+    }
+  ]
+}

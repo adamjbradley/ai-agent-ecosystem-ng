@@ -1,9 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Need",
+  "description": "Schema for representing needs with musts, wants, conditions, and urgency",
   "type": "object",
   "properties": {
-    "id": { "type": "string", "description": "Unique identifier for the need." },
+    "id": { "type": "string", "format": "uuid", "description": "Unique identifier for the need." },
     "entity_type": {
       "type": "string",
       "enum": ["individual", "business", "government"],
@@ -32,10 +33,20 @@
     },
     "elements": {
       "type": "object",
-      "description": "Attributes and their available options.",
+      "description": "Attributes and their available options, with must/want flags.",
       "additionalProperties": {
-        "type": "array",
-        "items": { "type": "string" }
+        "type": "object",
+        "properties": {
+          "alternatives": {
+            "type": "array",
+            "items": { "type": ["string", "number"] },
+            "minItems": 1
+          },
+          "must": { "type": "boolean", "description": "Non-negotiable option(s)." },
+          "want_rank": { "type": "integer", "minimum": 1, "maximum": 10, "description": "Desirability rank." }
+        },
+        "required": ["alternatives"],
+        "additionalProperties": false
       }
     },
     "conditions": {
@@ -46,14 +57,16 @@
         "properties": {
           "elements": {
             "type": "object",
+            "description": "Subset of element selections for this condition.",
             "additionalProperties": {
               "type": "array",
-              "items": { "type": "string" }
+              "items": { "type": ["string", "number"] }
             }
           },
           "price": { "type": "number", "description": "Price when this condition applies." }
         },
-        "required": ["elements", "price"]
+        "required": ["elements", "price"],
+        "additionalProperties": false
       }
     },
     "musts": {
@@ -63,9 +76,10 @@
         "type": "object",
         "properties": {
           "element": { "type": "string" },
-          "options": { "type": "array", "items": { "type": "string" } }
+          "options": { "type": "array", "items": { "type": ["string", "number"] } }
         },
-        "required": ["element", "options"]
+        "required": ["element", "options"],
+        "additionalProperties": false
       }
     },
     "wants": {
@@ -75,10 +89,11 @@
         "type": "object",
         "properties": {
           "element": { "type": "string" },
-          "options": { "type": "array", "items": { "type": "string" } },
+          "options": { "type": "array", "items": { "type": ["string", "number"] } },
           "rank": { "type": "integer", "minimum": 1, "maximum": 10 }
         },
-        "required": ["element", "options", "rank"]
+        "required": ["element", "options", "rank"],
+        "additionalProperties": false
       }
     },
     "urgency": {
@@ -90,5 +105,6 @@
   "required": [
     "id", "entity_type", "classification", "need_category",
     "what", "elements", "urgency"
-  ]
+  ],
+  "additionalProperties": false
 }

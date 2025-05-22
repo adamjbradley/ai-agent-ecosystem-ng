@@ -7,7 +7,7 @@ NEED_RPC = "http://needs-worker:9001"
 OFFER_RPC = "http://opportunity-agent:9003"
 SUPPLY_RPC = "http://supplier-agent:9005"
 MATCH_RPC = "http://match-agent:9002"
-PREDICTION_RPC = "http://insight-agent:9006"
+PREDICTION_RPC = "http://insight-worker:9006"
 
 # Helper to call JSON-RPC
 def rpc_call(endpoint, method, params=None):
