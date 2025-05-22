@@ -4,9 +4,8 @@ import uuid
 import logging
 from datetime import datetime
 from jsonrpcserver import method, serve
-from jsonrpcserver.response import Success
 
-MATCH_RPC_URL = "http://match-agent:9002/rpc"
+MATCH_RPC_URL = "http://match-agent:9002"
 PREDICTIONS   = []
 
 def call_mcp(endpoint, method, params=None):
@@ -15,7 +14,7 @@ def call_mcp(endpoint, method, params=None):
         resp = requests.post(endpoint, json=payload, timeout=5)
         return resp.json().get("result", [])
     except Exception as e:
-        logging.error(f"MCP call to {endpoint} failed: {e}")
+        logging.error(f"[insight_worker] MCP call to {endpoint} failed: {e}")
         return []
 
 class BasePredictor:
@@ -62,9 +61,9 @@ async def sync_and_predict():
         await asyncio.sleep(60)
 
 @method
-def prediction_list(params=None):
+def prediction_list(**params):
     logging.info(f"[insight_worker] Returning {len(PREDICTIONS)} predictions")
-    return Success(PREDICTIONS)
+    return PREDICTIONS
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

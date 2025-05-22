@@ -4,10 +4,9 @@ import uuid
 import logging
 from datetime import datetime
 from jsonrpcserver import method, serve
-from jsonrpcserver.response import Success
 
-NEED_RPC_URL  = "http://needs-worker:9001/rpc"
-OFFER_RPC_URL = "http://opportunity-agent:9003/rpc"
+NEED_RPC_URL  = "http://needs-worker:9001"
+OFFER_RPC_URL = "http://opportunity-agent:9003"
 
 NEEDS_CACHE  = []
 OFFERS_CACHE = []
@@ -19,7 +18,7 @@ def call_mcp(endpoint, method, params=None):
         resp = requests.post(endpoint, json=payload, timeout=5)
         return resp.json().get("result", [])
     except Exception as e:
-        logging.error(f"MCP call to {endpoint} failed: {e}")
+        logging.error(f"[match_agent] MCP call to {endpoint} failed: {e}")
         return []
 
 class BaseScorer:
@@ -73,22 +72,21 @@ async def sync_and_match():
         await asyncio.sleep(60)
 
 @method
-def match_list(params=None):
+def match_list(**params):
     logging.info(f"[match_agent] Returning {len(MATCHES)} matches")
-    return Success(MATCHES)
+    return MATCHES
 
 @method
-def match_propose(params):
+def match_propose(**params):
     need  = params.get("need")
     offer = params.get("offer")
     score = scorer.score(need, offer)
-    resp = {
+    return {
         "need_id": need.get("id"),
         "offer_sku": offer.get("sku"),
         "score": score,
         "timestamp": datetime.utcnow().isoformat()+"Z"
     }
-    return Success(resp)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

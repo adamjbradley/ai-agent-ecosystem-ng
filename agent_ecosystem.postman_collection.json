@@ -1,0 +1,235 @@
+{
+  "info": {
+    "name": "Agent Ecosystem MCP",
+    "_postman_id": "bfe1bcd5-20e2-4139-9c4a-d365b8d30e11",
+    "description": "JSON-RPC 2.0 endpoints for AI Agent Ecosystem",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Needs",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"need_list\",\n  \"params\": {},\n  \"id\": \"320b28e6-40ef-472d-8621-066850894a02\"\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:9001",
+          "protocol": "http",
+          "host": [
+            "127.0.0.1"
+          ],
+          "port": "9001"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Need",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"need_intent\",\n  \"params\": {\n    \"id\": \"sample-id\",\n    \"what\": \"headphones\"\n  },\n  \"id\": \"ec77f079-38ea-4d7e-b60c-377e8e736c86\"\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:9001",
+          "protocol": "http",
+          "host": [
+            "127.0.0.1"
+          ],
+          "port": "9001"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List Offers",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"offer_list\",\n  \"params\": {},\n  \"id\": \"300e91ee-a8d6-4ab4-9403-5b934e313ec7\"\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:9003",
+          "protocol": "http",
+          "host": [
+            "127.0.0.1"
+          ],
+          "port": "9003"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Publish Offer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"offer_publish\",\n  \"params\": {\n    \"offer\": {\n      \"sku\": \"test\",\n      \"name\": \"Test Product\",\n      \"type\": \"product\",\n      \"price\": 10.0\n    }\n  },\n  \"id\": \"483486af-b09f-4bb1-a538-40ee2fdb6790\"\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:9003",
+          "protocol": "http",
+          "host": [
+            "127.0.0.1"
+          ],
+          "port": "9003"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List Supply",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"supply_list\",\n  \"params\": {},\n  \"id\": \"18c772e9-a5f4-413d-be69-219d535125f2\"\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:9005",
+          "protocol": "http",
+          "host": [
+            "127.0.0.1"
+          ],
+          "port": "9005"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Deliver Supply",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"supply_deliver\",\n  \"params\": {\n    \"sku\": \"steel-pipe\",\n    \"quantity\": 5,\n    \"merchant_id\": \"m1\"\n  },\n  \"id\": \"32210d98-9c4f-4df9-89f7-5ca54c8feba7\"\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:9005",
+          "protocol": "http",
+          "host": [
+            "127.0.0.1"
+          ],
+          "port": "9005"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List Matches",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"match_list\",\n  \"params\": {},\n  \"id\": \"1f3a8c78-5001-4dbc-96f0-49cd0042da48\"\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:9002",
+          "protocol": "http",
+          "host": [
+            "127.0.0.1"
+          ],
+          "port": "9002"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Propose Match",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"match_propose\",\n  \"params\": {\n    \"need\": {\n      \"id\": \"n1\"\n    },\n    \"offer\": {\n      \"sku\": \"o1\"\n    }\n  },\n  \"id\": \"52aa8f55-1930-411b-84f2-07564a486800\"\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:9002",
+          "protocol": "http",
+          "host": [
+            "127.0.0.1"
+          ],
+          "port": "9002"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List Predictions",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"prediction_list\",\n  \"params\": {},\n  \"id\": \"99b8e68e-165f-4651-b81e-2c099d820335\"\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:9006",
+          "protocol": "http",
+          "host": [
+            "127.0.0.1"
+          ],
+          "port": "9006"
+        }
+      },
+      "response": []
+    }
+  ]
+}
