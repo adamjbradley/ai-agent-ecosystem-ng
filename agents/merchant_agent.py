@@ -7,11 +7,6 @@ SUPPLIER_RPC_URL = "http://supplier-agent:9005/rpc"
 OFFER_RPC_URL = "http://opportunity-agent:9003/rpc"
 
 @method
-def need_list(params=None):
-    # Placeholder if needed in future
-    return []
-
-@method
 def offer_publish(params):
     offer = params.get("offer")
     print(f"[merchant_agent] Received offer: {offer}")
@@ -21,7 +16,7 @@ async def pull_and_publish_offers():
     while True:
         response = requests.post(
             SUPPLIER_RPC_URL,
-            json={"jsonrpc":"2.0", "method":"supply.list", "params":{}, "id": str(uuid.uuid4())}
+            json={"jsonrpc":"2.0", "method":"supply_list", "params":{}, "id": str(uuid.uuid4())}
         ).json()
         supplies = response.get("result", [])
         for item in supplies:
@@ -34,11 +29,12 @@ async def pull_and_publish_offers():
             }
             requests.post(
                 OFFER_RPC_URL,
-                json={"jsonrpc":"2.0", "method":"offer.publish", "params":{"offer": offer}, "id": str(uuid.uuid4())}
+                json={"jsonrpc":"2.0", "method":"offer_publish", "params":{"offer": offer}, "id": str(uuid.uuid4())}
             )
         await asyncio.sleep(300)
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.create_task(pull_and_publish_offers())
+    # Serve MCP JSON-RPC on port 9004
     serve("0.0.0.0", 9004)

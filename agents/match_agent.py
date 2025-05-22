@@ -5,20 +5,15 @@ import logging
 from datetime import datetime
 from jsonrpcserver import method, serve
 
-NEED_RPC_URL = "http://needs-worker:9001/rpc"
-OFFER_RPC_URL = "http://opportunity-agent:9003/rpc"
+NEED_RPC_URL   = "http://needs-worker:9001/rpc"
+OFFER_RPC_URL  = "http://opportunity-agent:9003/rpc"
 
-NEEDS_CACHE = []
+NEEDS_CACHE  = []
 OFFERS_CACHE = []
-MATCHES = []
+MATCHES      = []
 
 def call_mcp(endpoint, method, params=None):
-    payload = {
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params or {},
-        "id": str(uuid.uuid4())
-    }
+    payload = {"jsonrpc":"2.0","method":method,"params":params or {},"id":str(uuid.uuid4())}
     try:
         resp = requests.post(endpoint, json=payload, timeout=5)
         return resp.json().get("result", [])
@@ -30,8 +25,8 @@ class BaseScorer:
     def score(self, need, offer):
         if need.get("category") != offer.get("type"):
             return 0.0
-        max_price = need.get("constraints", {}).get("max_price")
-        if max_price and offer.get("price", 0) > max_price:
+        max_price = need.get("constraints",{}).get("max_price")
+        if max_price and offer.get("price",0) > max_price:
             return 0.0
         return 1.0
 
@@ -48,8 +43,7 @@ class MLScorer(BaseScorer):
     def score(self, need, offer):
         if not self.model:
             return super().score(need, offer)
-        max_price = need.get("constraints", {}).get("max_price", 0)
-        features = [[max_price, offer.get("price", 0)]]
+        features = [[need.get("constraints",{}).get("max_price",0), offer.get("price",0)]]
         try:
             proba = self.model.predict_proba(features)[0][1]
             return float(proba)
@@ -61,12 +55,8 @@ scorer = MLScorer()
 
 async def sync_and_match():
     while True:
-        needs = call_mcp(NEED_RPC_URL, "need_list")
-        NEEDS_CACHE.clear()
-        NEEDS_CACHE.extend(needs)
-        offers = call_mcp(OFFER_RPC_URL, "offer_list")
-        OFFERS_CACHE.clear()
-        OFFERS_CACHE.extend(offers)
+        NEEDS_CACHE[:]  = call_mcp(NEED_RPC_URL,  "need_list")
+        OFFERS_CACHE[:] = call_mcp(OFFER_RPC_URL, "offer_list")
         MATCHES.clear()
         for need in NEEDS_CACHE:
             for offer in OFFERS_CACHE:
@@ -77,7 +67,7 @@ async def sync_and_match():
                         "need_id": need.get("id"),
                         "offer_sku": offer.get("sku"),
                         "score": score,
-                        "timestamp": datetime.utcnow().isoformat() + "Z"
+                        "timestamp": datetime.utcnow().isoformat()+"Z"
                     })
         await asyncio.sleep(60)
 
@@ -87,14 +77,14 @@ def match_list(params=None):
 
 @method
 def match_propose(params):
-    need = params.get("need")
+    need  = params.get("need")
     offer = params.get("offer")
     score = scorer.score(need, offer)
     return {
         "need_id": need.get("id"),
         "offer_sku": offer.get("sku"),
         "score": score,
-        "timestamp": datetime.utcnow().isoformat() + "Z"
+        "timestamp": datetime.utcnow().isoformat()+"Z"
     }
 
 if __name__ == "__main__":

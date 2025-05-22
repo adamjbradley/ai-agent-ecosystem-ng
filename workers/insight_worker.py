@@ -6,15 +6,10 @@ from datetime import datetime
 from jsonrpcserver import method, serve
 
 MATCH_RPC_URL = "http://match-agent:9002/rpc"
-PREDICTIONS = []
+PREDICTIONS   = []
 
 def call_mcp(endpoint, method, params=None):
-    payload = {
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params or {},
-        "id": str(uuid.uuid4())
-    }
+    payload = {"jsonrpc":"2.0","method":method,"params":params or {},"id":str(uuid.uuid4())}
     try:
         resp = requests.post(endpoint, json=payload, timeout=5)
         return resp.json().get("result", [])

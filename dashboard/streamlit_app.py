@@ -7,8 +7,9 @@ NEED_RPC = "http://needs-worker:9001/rpc"
 OFFER_RPC = "http://opportunity-agent:9003/rpc"
 SUPPLY_RPC = "http://supplier-agent:9005/rpc"
 MATCH_RPC = "http://match-agent:9002/rpc"
-PREDICTION_RPC = "http://insight-agent:9006/rpc"
+PREDICTION_RPC = "http://insight-worker:9006/rpc"
 
+# Helper to call JSON-RPC
 def rpc_call(endpoint, method, params=None):
     payload = {
         "jsonrpc": "2.0",
@@ -26,9 +27,10 @@ def rpc_call(endpoint, method, params=None):
 st.set_page_config(page_title="AI Agent Ecosystem Dashboard", layout="wide")
 st.title("AI Agent Ecosystem Dashboard")
 
-if st.button("Refresh Data"):
-    st.experimental_rerun()
+# Refresh control (pressing the button causes Streamlit to rerun automatically)
+st.button("Refresh Data")
 
+# Layout: five columns for each data type
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
@@ -57,4 +59,5 @@ with col5:
     st.write(predictions)
 
 st.markdown("---")
-st.info("Data above is retrieved via MCP (JSON-RPC) from each agent. Click **Refresh Data** to update.")
+
+st.info("Data above is retrieved via MCP (JSON-RPC) from each agent. Press **Refresh Data** to update.")
