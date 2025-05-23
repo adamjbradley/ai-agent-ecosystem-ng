@@ -155,5 +155,16 @@ services:
       - supplier-agent
       - opportunity-agent
 
+  basic-client:
+    build: .
+    container_name: basic-client
+    entrypoint: ["python"]
+    command: ["workers/basic_client.py"]
+    volumes:
+      - .:/app
+    working_dir: /app
+    depends_on:
+      - needs-worker
+
 volumes:
   redis-data:
