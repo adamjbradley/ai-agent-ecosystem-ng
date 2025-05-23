@@ -1,11 +1,13 @@
-from jsonrpcserver import method, serve
+from mcp.server.fastmcp import FastMCP
 import logging
 
 # In-memory store of submitted needs
 NEEDS = []
 
-@method
-def need_intent(**params):
+mcp = FastMCP("needs-agent")
+
+@mcp.tool("need_intent")
+def need_intent(params) -> dict:
     """
     Submit a new need. Expects a dict with at least an 'id' field.
     """
@@ -14,8 +16,8 @@ def need_intent(**params):
     logging.info(f"Stored need: {need.get('id')}")
     return {"status": "stored", "need_id": need.get("id")}
 
-@method
-def need_list(**params):
+@mcp.tool("need_list")
+def need_list() -> list:
     """
     List all stored needs.
     """
@@ -23,5 +25,4 @@ def need_list(**params):
     return NEEDS
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    serve("0.0.0.0", 9001)
+    mcp.run(transport="streamable-http")
