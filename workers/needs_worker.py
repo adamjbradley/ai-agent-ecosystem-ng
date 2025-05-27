@@ -17,7 +17,7 @@ def need_intent(message: dict) -> str:
     """
     need = message or {}
     NEEDS.append(need)
-    logging.info(f"Stored need: {str}")
+    logging.info(f"Stored need: {need}")
     return "status: stored"
 
 @mcp.tool("need_list")
