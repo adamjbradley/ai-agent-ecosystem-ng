@@ -22,8 +22,8 @@ async def call_mcp_tool(tool_name, arguments=None):
         async with streamablehttp_client(NEED_MCP_URL) as (read_stream, write_stream, _):
             async with ClientSession(read_stream, write_stream) as session:
                 await session.initialize()
-                # The 'need_intent' tool expects its payload under an 'arguments' dict
-                # with a key that matches the parameter name in the tool definition (e.g., 'message')
+                # The MCP tool expects its payload under an 'arguments' dict
+                # with keys that match the parameter names in the tool definition.
                 response = await session.call_tool(tool_name, arguments=arguments or {})
                 return response
     except Exception as e:
@@ -113,12 +113,13 @@ if __name__ == "__main__":
             generator = generate_needs()
             need_payload = next(generator)
 
-        # The 'need_intent' tool on needs_worker.py expects a 'message' argument.
-        mcp_arguments = {"message": need_payload}
+        # The 'need_add' tool on needs_worker.py expects a 'need_data' argument.
+        # The need_payload itself is the data.
+        mcp_arguments = {"need_data": need_payload} 
         
-        logging.info(f"Submitting need ID {need_payload['id']} via MCP...")
+        logging.info(f"Submitting need ID {need_payload['id']} via MCP to 'need_add' tool...")
         # Run the async MCP call
-        result = asyncio.run(call_mcp_tool("need_intent", arguments=mcp_arguments))
+        result = asyncio.run(call_mcp_tool("need_add", arguments=mcp_arguments))
         
         logging.info(f"[{datetime.utcnow().isoformat()}Z] Submitted need {need_payload['id']}. Response: {result}")
         

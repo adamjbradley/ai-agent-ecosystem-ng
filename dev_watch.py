@@ -12,7 +12,7 @@ EXTS = {".py", ".yaml", ".yml", ".tex"}
 class RebuildHandler(FileSystemEventHandler):
     def __init__(self):
         self._last = 0
-        self.debounce = 5.0  # seconds
+        self.debounce = 10.0  # seconds
         self.last_crc = {}
 
     def on_any_event(self, event):
