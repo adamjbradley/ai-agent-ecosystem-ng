@@ -1,85 +1,79 @@
-from jsonrpcserver import method, serve
+from mcp.server.fastmcp import FastMCP
 import logging
+import uuid
 from datetime import datetime
 
-# Static list of available supplier companies and their catalogs
-SUPPLIERS = [
-    {
-        "company_id": "supplier-1",
-        "company_name": "Acme Steel Inc.",
-        "catalog": [
-            {"sku": "steel-pipe", "name": "Steel Pipe", "type": "product", "price": 100.0, "stock": 250},
-            {"sku": "steel-beam", "name": "Steel Beam", "type": "product", "price": 200.0, "stock": 100}
-        ]
-    },
-    {
-        "company_id": "supplier-2",
-        "company_name": "ConsultCo Ltd.",
-        "catalog": [
-            {"sku": "consulting-1h", "name": "Consulting Session (1 hour)", "type": "service", "price": 300.0, "slots": 12},
-            {"sku": "consulting-4h", "name": "Consulting Session (4 hours)", "type": "service", "price": 1000.0, "slots": 5}
-        ]
-    }
-]
+# In-memory store of supplies
+SUPPLIES = {} # Using a dictionary to store supplies by SKU
 
-@method
-def supply_list(**params):
-    """
-    Return the full supply catalog with supplier company names.
-    """
-    items = []
-    for supplier in SUPPLIERS:
-        for item in supplier["catalog"]:
-            enriched = item.copy()
-            enriched["supplier_id"] = supplier["company_id"]
-            enriched["supplier_name"] = supplier["company_name"]
-            items.append(enriched)
-    logging.info(f"[supplier_agent] Returning {len(items)} items from {len(SUPPLIERS)} suppliers")
-    return items
+# Initialize MCP server
+mcp = FastMCP("supplier-agent")
+mcp.settings.port = 9005
+mcp.settings.host = "0.0.0.0" # Recommended for Docker
 
-@method
-def supply_publish(**params):
-    """
-    Add a new product or service to a given supplier's catalog.
-    Expects: supplier_id and item dict with sku, name, type, price, etc.
-    """
-    supplier_id = params.get("supplier_id")
-    item = params.get("item")
-    if not supplier_id or not item or not item.get("sku"):
-        logging.warning("[supplier_agent] supply_publish missing supplier_id or item.sku")
-        return {"error": "Must provide 'supplier_id' and an 'item' with a unique 'sku'"}
-    for supplier in SUPPLIERS:
-        if supplier["company_id"] == supplier_id:
-            supplier["catalog"].append(item)
-            logging.info(f"[supplier_agent] Added item {item.get('sku')} to {supplier_id}")
-            return {"status": "stored", "supplier_id": supplier_id, "sku": item.get("sku")}  
-    logging.warning(f"[supplier_agent] Unknown supplier_id: {supplier_id}")
-    return {"error": f"Unknown supplier_id {supplier_id}"}
+def initialize_supplies():
+    """Initializes some default supplies."""
+    default_supplies_data = [
+        {"sku": "CEREAL001", "name": "Breakfast Cereal", "type": "Goods", "category": "food", "stock": 100, "price": 3.50},
+        {"sku": "CLEANSRV01", "name": "Office Cleaning Service", "type": "Services", "category": "cleaning", "stock": 50, "price": 150.00}, # Stock for services can mean capacity
+        {"sku": "ROADCON01", "name": "Road Construction Unit", "type": "Land", "category": "construction", "stock": 10, "price": 100000.00}, # Price per unit/project
+        {"sku": "LAPTOP001", "name": "Standard Laptop", "type": "electronic goods", "category": "electronics", "stock": 75, "price": 600.00},
+        {"sku": "FINCONSULT01", "name": "Financial Consulting Hour", "type": "financial services", "category": "consulting", "stock": 200, "price": 120.00},
+        {"sku": "GENCONSULT01", "name": "General Consulting Hour", "type": "consulting services", "category": "consulting", "stock": 150, "price": 100.00},
+    ]
+    for supply_data in default_supplies_data:
+        SUPPLIES[supply_data["sku"]] = supply_data
+    logging.info(f"Initialized {len(SUPPLIES)} default supplies.")
 
-@method
-def supply_deliver(**params):
+@mcp.tool("supply_add")
+def supply_add(supply: dict) -> dict:
     """
-    Simulate delivery of items from supplier to merchant.
+    Add a new supply or update an existing one.
+    Expects a dictionary for 'supply' with at least 'sku', 'name', 'stock', 'price'.
     """
-    sku = params.get("sku")
-    quantity = params.get("quantity")
-    merchant_id = params.get("merchant_id")
-    supplier_id = params.get("supplier_id")
-    if not sku or quantity is None or not merchant_id or not supplier_id:
-        logging.warning("[supplier_agent] supply_deliver missing parameters")
-        return {"error": "Must provide 'sku', 'quantity', 'merchant_id', and 'supplier_id'"}
-    # Here, we could decrement stock; omitted for brevity
-    response = {
-        "status": "accepted",
-        "sku": sku,
-        "quantity": quantity,
-        "merchant_id": merchant_id,
-        "supplier_id": supplier_id,
-        "delivery_eta": datetime.utcnow().isoformat() + "Z"
-    }
-    logging.info(f"[supplier_agent] Delivery accepted: {response}")
-    return response
+    if not isinstance(supply, dict) or not supply.get("sku"):
+        logging.warning(f"[supplier_agent] supply_add received invalid supply data or missing SKU: {supply}")
+        return {"status": "error", "message": "Invalid supply data or missing SKU."}
+
+    sku = supply["sku"]
+    SUPPLIES[sku] = supply
+    logging.info(f"[supplier_agent] Added/Updated supply: {sku}, Stock: {supply.get('stock')}")
+    return {"status": "added_or_updated", "sku": sku, "timestamp": datetime.utcnow().isoformat() + "Z"}
+
+@mcp.tool("supply_list")
+def supply_list() -> list:
+    """
+    List all available supplies.
+    """
+    # Return a list of supply objects (the values of the dictionary)
+    list_of_supplies = list(SUPPLIES.values())
+    logging.info(f"[supplier_agent] Returning {len(list_of_supplies)} supplies.")
+    return list_of_supplies
+
+@mcp.tool("supply_deliver")
+def supply_deliver(sku: str, quantity: int, merchant_id: str) -> dict:
+    """
+    Deliver a quantity of a supply (reduce stock).
+    """
+    if not isinstance(sku, str) or not isinstance(quantity, int) or quantity <= 0:
+        logging.warning(f"[supplier_agent] supply_deliver received invalid parameters: sku={sku}, quantity={quantity}")
+        return {"status": "error", "message": "Invalid SKU or quantity."}
+
+    if sku in SUPPLIES:
+        supply_item = SUPPLIES[sku]
+        if supply_item["stock"] >= quantity:
+            supply_item["stock"] -= quantity
+            logging.info(f"[supplier_agent] Delivered {quantity} of {sku} to {merchant_id}. New stock: {supply_item['stock']}")
+            return {"status": "delivered", "sku": sku, "quantity_delivered": quantity, "remaining_stock": supply_item["stock"], "timestamp": datetime.utcnow().isoformat() + "Z"}
+        else:
+            logging.warning(f"[supplier_agent] Insufficient stock for {sku}. Requested: {quantity}, Available: {supply_item['stock']}")
+            return {"status": "error", "message": "Insufficient stock", "sku": sku, "requested": quantity, "available": supply_item["stock"]}
+    else:
+        logging.warning(f"[supplier_agent] Supply SKU not found: {sku}")
+        return {"status": "error", "message": "SKU not found", "sku": sku}
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    serve("0.0.0.0", 9005)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    initialize_supplies() # Initialize with some data
+    logging.info(f"Supplier Agent (MCP) starting on port {mcp.settings.port} host {mcp.settings.host}")
+    mcp.run(transport="streamable-http")

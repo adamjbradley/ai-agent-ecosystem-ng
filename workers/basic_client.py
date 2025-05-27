@@ -11,21 +11,6 @@ async def main():
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
 
-            # Call need_intent
-            print("Calling need_intent...")
-
-            request = {
-                'name': 'value'
-            }
-            text = json.dumps(request)
-
-            response = await session.call_tool("need_intent", arguments=
-                {
-                    'type=text': None,
-                    "message": text
-                })
-            print("need_intent response:", response)
-
             # Call need_list
             print("Calling need_list...")
             response = await session.call_tool("need_list")
