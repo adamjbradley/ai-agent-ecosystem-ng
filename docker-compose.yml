@@ -166,5 +166,20 @@ services:
     depends_on:
       - needs-worker
 
+  ngrok:
+    image: ngrok/ngrok:latest
+    command: [
+      "http",
+      "--url=https://default.internal",
+      "http://dashboard:8501"
+    ]
+    environment:
+      NGROK_AUTHTOKEN: "7h9r3gqggN2GgxrHt9puc_7oDr6uCGh3XNHaSj9cBq6"      
+    container_name: ngrok-tunnel
+    depends_on:
+      - dashboard
+    ports:
+      - 4040:4040
+
 volumes:
   redis-data:
