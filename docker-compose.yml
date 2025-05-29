@@ -112,6 +112,17 @@ services:
     ports:
       - "8502:8501"
     environment:
+      # For streamlit_app.py MCP calls
+      - NEED_BASE_URL=http://needs-worker:9001
+      - OFFER_BASE_URL=http://opportunity-agent:9003
+      - SUPPLY_BASE_URL=http://supplier-agent:9005
+      - MATCH_BASE_URL=http://match-agent:9002
+      - PREDICTION_BASE_URL=http://insight-worker:9006 # streamlit_app.py expects service on 9006
+      # Externalized configurations for the dashboard itself
+      - LOG_LEVEL=${LOG_LEVEL:-INFO} 
+      - DEFAULT_CACHE_TTL_SECONDS=${DEFAULT_CACHE_TTL_SECONDS:-10}
+      - STREAMLIT_PAGE_TITLE=${STREAMLIT_PAGE_TITLE:-AI Agent Ecosystem Dashboard}
+      # REDIS variables from your snippet (streamlit_app.py doesn't use them directly currently)
       - REDIS_HOST=redis-ai
       - REDIS_PORT=6379
     depends_on:
